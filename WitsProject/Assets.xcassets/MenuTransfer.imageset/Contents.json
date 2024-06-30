@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "MenuTransfer.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
