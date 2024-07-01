@@ -29,7 +29,6 @@ class NotificationTableViewCell: UITableViewCell {
         titleLabel.textColor = UIColor.rgb(red: 26, green: 26, blue: 26)
         dateLabel.textColor = UIColor.rgb(red: 26, green: 26, blue: 26)
         descriptionLabel.textColor = UIColor.rgb(red: 115, green: 116, blue: 126)
-        setDot()
     }
     
     func setDot() {

@@ -19,6 +19,7 @@ class NotificationViewController: UIViewController {
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.backgroundColor = .white
         titleLabel.textColor = UIColor.rgb(red: 26, green: 26, blue: 26)
         tableView.register(UINib(nibName: "NotificationTableViewCell", bundle: nil), forCellReuseIdentifier: NotificationTableViewCell.cellIdentifier)
         tableView.separatorStyle = .none
@@ -26,7 +27,7 @@ class NotificationViewController: UIViewController {
         arrowView.addGestureRecognizer(tapGesture)
     }
     
-    @objc func goBack() {
+    @objc private func goBack() {
         navigationController?.popViewController(animated: true)
     }
 }

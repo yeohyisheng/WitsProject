@@ -25,6 +25,7 @@ class MenuView: UIView {
                                   MenuStruct(image: .menuScan, title: "QR pay scan"),
                                   MenuStruct(image: .menuQRcode, title: "My QR code"),
                                   MenuStruct(image: .menuTopUp, title: "Top up")]
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }
@@ -33,7 +34,7 @@ class MenuView: UIView {
         setCollectionView()
     }
     
-    func setCollectionView() {
+    private func setCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.frame = bounds

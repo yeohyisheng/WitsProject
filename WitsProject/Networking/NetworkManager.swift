@@ -334,7 +334,7 @@ class NetworkManager {
         
         for i in 0 ..< favoriteList.count {
             var favouriteStruct = FavouriteStruct(name: "",
-                                                      rawValue: "")
+                                                  rawValue: "")
             favouriteStruct.title = favoriteList[i].nickname
             favouriteStruct.image = FavouriteList(fromString: favoriteList[i].transType)?.toImage()
             favouriteStructs.append(favouriteStruct)

@@ -8,7 +8,7 @@
 import UIKit
 
 class MainViewController: UIViewController {
-
+    
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet var navigationView: UIView!
     @IBOutlet var headView: UIView!
@@ -16,78 +16,64 @@ class MainViewController: UIViewController {
     @IBOutlet var favouriteView: UIView!
     @IBOutlet var adView: UIView!
     @IBOutlet var tabbarView: UIView!
-    @IBOutlet var collectionView: UICollectionView!
-    @IBOutlet var collectionViewFlowLayout: UICollectionViewFlowLayout!
-    let menuList: [MenuStruct] = [MenuStruct(image: .menuTransfer, title: "Transfer"),
-                                  MenuStruct(image: .menuScan, title: "QR pay scan"),
-                                  MenuStruct(image: .menuPayment, title: "Payment"),
-                                  MenuStruct(image: .menuQRcode, title: "My QR code"),
-                                  MenuStruct(image: .menuUtility, title: "Utility"),
-                                  MenuStruct(image: .menuTopUp, title: "Top up")]
-    var allUSDAccount: [AllUsageAccountStruct] = []
-    var allKHRAccount: [AllUsageAccountStruct] = []
-    var favouriteStruct: [FavouriteStruct] = []
-    var usageNotificationStructs: [UsageNotificationStruct] = []
-    var refreshControl = UIRefreshControl()
-    var isFirstOpen = true
+    private var allUSDAccount: [AllUsageAccountStruct] = []
+    private var allKHRAccount: [AllUsageAccountStruct] = []
+    private var favouriteStruct: [FavouriteStruct] = []
+    private var usageNotificationStructs: [UsageNotificationStruct] = []
+    private var headCustomView: HeadView?
+    private var refreshControl = UIRefreshControl()
+    private var isFirstOpen = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
         print("ViewDidLoad")
         initView()
-        
-        print("scrollView.contentSize = \(scrollView.contentSize)")
-        print("scrollView.frame = \(scrollView.frame)")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print("viewWillAppear")
-//        initView()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-//        initView()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-    }
-    
-    private func setMenuView() {
-        for view in menuView.subviews {
-            let className = String(describing: type(of: view))
-            if className == "MenuView" {
-                print("reload")
-                let subView = view as! MenuView
-                subView.collectionView.reloadData()
-            }
-        }
-    }
-
-    func goToNotificationViewController() {
+    private func goToNotificationViewController() {
         let notificationViewController = NotificationViewController()
         notificationViewController.usageNotificationStructs = usageNotificationStructs
         navigationController?.pushViewController(notificationViewController, animated: true)
     }
     
     private func initView() {
+        initNavigationView()
+        initHeadView()
+        initMenuView()
+        initFavouriteView()
+        initADView()
+        initTabbarView()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        scrollView.addSubview(refreshControl)
+    }
+    
+    private func initNavigationView() {
         let nib = UINib(nibName: "NavigationView", bundle: nil)
         guard let navigationCustomView = nib.instantiate(withOwner: self, options: nil).first as? NavigationView else {
+            print("failed load navigationView")
             return
         }
         navigationCustomView.frame = navigationView.bounds
         navigationView.addSubview(navigationCustomView)
         navigationCustomView.setData(bellImage: UIImage(resource: .bellNotActive))
         navigationCustomView.onTouchBell = goToNotificationViewController
-        
+
+    }
+    
+    private func initHeadView() {
         let headViewNib = UINib(nibName: "HeadView", bundle: nil)
         guard let headCustomView = headViewNib.instantiate(withOwner: self, options: nil).first as? HeadView else {
+            print("failed load headView")
             return
         }
         headCustomView.frame = headView.bounds
         headView.addSubview(headCustomView)
+        self.headCustomView = headCustomView
         headCustomView.topMoneyLabel.showSkeleton()
         headCustomView.bottomMoneyLabel.showSkeleton()
         Task {
@@ -103,10 +89,11 @@ class MainViewController: UIViewController {
                 headCustomView.topMoneyLabel.hideSkeleton()
                 headCustomView.bottomMoneyLabel.hideSkeleton()
             }
-
         }
-        
-        
+
+    }
+    
+    private func initMenuView() {
         let menuViewNib = UINib(nibName: "MenuView", bundle: nil)
         guard let menuCustomView = menuViewNib.instantiate(withOwner: self, options: nil).first as? MenuView else {
             print("failed load menuView")
@@ -114,8 +101,10 @@ class MainViewController: UIViewController {
         }
         menuCustomView.frame = menuView.bounds
         menuView.addSubview(menuCustomView)
-        print("menuCustomView = \(menuCustomView.frame.height), menuCustomView.collectionViewHeight = \(menuCustomView.collectionView.frame.height)")
-        
+
+    }
+    
+    private func initFavouriteView() {
         let favouriteViewNib = UINib(nibName: "FavouriteView", bundle: nil)
         guard let favouriteCustomView = favouriteViewNib.instantiate(withOwner: self, options: nil).first as? FavouriteView else {
             print("failed load favouriteView")
@@ -123,7 +112,10 @@ class MainViewController: UIViewController {
         }
         favouriteCustomView.frame = favouriteView.bounds
         favouriteView.addSubview(favouriteCustomView)
-        
+
+    }
+    
+    private func initADView() {
         let adViewNib = UINib(nibName: "ADView", bundle: nil)
         guard let adCustomView = adViewNib.instantiate(withOwner: self, options: nil).first as? ADView else {
             print("failed load adView")
@@ -131,7 +123,10 @@ class MainViewController: UIViewController {
         }
         adCustomView.frame = adView.bounds
         adView.addSubview(adCustomView)
-        
+
+    }
+    
+    private func initTabbarView() {
         let tabbarViewNib = UINib(nibName: "TabBarView", bundle: nil)
         guard let tabbarCustomView = tabbarViewNib.instantiate(withOwner: self, options: nil).first as? TabBarView else {
             print("failed load tabbarView")
@@ -142,36 +137,31 @@ class MainViewController: UIViewController {
         tabbarCustomView.delegate = self
         tabbarCustomView.chooseUSD = {
             if self.isFirstOpen {
-                headCustomView.mode = .USD
+                self.headCustomView?.mode = .USD
             }
         }
         tabbarCustomView.chooseKHR = {
             if self.isFirstOpen {
-                headCustomView.mode = .KHR
+                self.headCustomView?.mode = .KHR
             }
         }
         
         tabbarCustomView.chooseAccount = { (accountType: AccountType) in
-            let isUSD = headCustomView.bottomCurrencyLabel.text == "USD"
+            let isUSD = self.headCustomView?.bottomCurrencyLabel.text == "USD"
             if isUSD {
                 for i in 0 ..< self.allUSDAccount.count {
                     if self.allUSDAccount[i].type == accountType {
-                        headCustomView.currentUsageCurrencyStruct = self.allUSDAccount[i].usageCurrencyStructs
+                        self.headCustomView?.currentUsageCurrencyStruct = self.allUSDAccount[i].usageCurrencyStructs
                     }
                 }
             } else {
                 for i in 0 ..< self.allKHRAccount.count {
                     if self.allKHRAccount[i].type == accountType {
-                        headCustomView.currentUsageCurrencyStruct = self.allKHRAccount[i].usageCurrencyStructs
+                        self.headCustomView?.currentUsageCurrencyStruct = self.allKHRAccount[i].usageCurrencyStructs
                     }
                 }
             }
-            
-            
         }
-        
-        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        scrollView.addSubview(refreshControl)
     }
     
     private func fetchData() {
@@ -180,9 +170,9 @@ class MainViewController: UIViewController {
         headView.bottomMoneyLabel.showSkeleton()
         Task {
             guard let notificationList = await NetworkManager.shared.fetchNotification(),
-            let allUSDAccount = await NetworkManager.shared.refreshUSDAllAccount(),
-            let allKHRAccount = await NetworkManager.shared.refreshKHRAllAccount(),
-            let favouriteStruct = await NetworkManager.shared.fetchFavourite() else { return }
+                  let allUSDAccount = await NetworkManager.shared.refreshUSDAllAccount(),
+                  let allKHRAccount = await NetworkManager.shared.refreshKHRAllAccount(),
+                  let favouriteStruct = await NetworkManager.shared.fetchFavourite() else { return }
             self.usageNotificationStructs = notificationList
             self.allUSDAccount = allUSDAccount
             self.allKHRAccount = allKHRAccount
@@ -200,7 +190,6 @@ class MainViewController: UIViewController {
             let favouriteView = self.favouriteView.subviews.filter{$0 is FavouriteView}.first as! FavouriteView
             favouriteView.favouriteList = favouriteStruct
             favouriteView.setCollectionView()
-            print("allUSDAccount = \(self.allUSDAccount), allKHRAccount = \(self.allKHRAccount)")
             self.refreshControl.endRefreshing()
         }
     }
@@ -208,25 +197,11 @@ class MainViewController: UIViewController {
     @objc private func refresh() {
         fetchData()
     }
-
-}
-
-extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return menuList.count
-    }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MenuCollectionViewCell.cellIdentifier, for: indexPath) as! MenuCollectionViewCell
-        cell.setData(title: menuList[indexPath.row].title, image: menuList[indexPath.row].image)
-        
-        return cell
-    }
 }
 
 extension MainViewController: TabbarViewDelegate {
     func showAlertController(controller: UIAlertController) {
-        print("showAlert")
         present(controller, animated: true) {
         }
     }

@@ -22,31 +22,24 @@ class HeadView: UIView {
     @IBOutlet var bottomCurrencyLabel: UILabel!
     @IBOutlet var bottomMoneyLabel: UILabel!
     
+    private var isShow = true
     var mode = currency.USD {
         didSet {
             bottomCurrencyLabel.text = mode == .USD ? "USD" : "KHR"
         }
     }
-    
     var currentUsageCurrencyStruct: [UsageCurrencyStruct] = [] {
         didSet {
             setCurrencyText()
         }
     }
     
-//    var currentTopCurrency = "USD"
-//    var currentTopBalance = "0"
-//    var currentBottomCurrency = "USD"
-//    var currentBottomBalance = "0"
-    var isShow = true
-    
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         initView()
     }
     
-    func initView() {
+    private func initView() {
         balanceLabel.text = "My Account Balance"
         balanceLabel.textColor = UIColor.rgb(red: 136, green: 136, blue: 136)
         topCurrencyLabel.textColor = UIColor.rgb(red: 85, green: 85, blue: 85)
@@ -58,7 +51,7 @@ class HeadView: UIView {
         eyeView.addGestureRecognizer(tapGesture)
     }
     
-    func setCurrencyText() {
+    private func setCurrencyText() {
         for i in 0 ..< currentUsageCurrencyStruct.count {
             if mode == .USD {
                 if i == 0 {
@@ -81,13 +74,13 @@ class HeadView: UIView {
         }
     }
     
-    func setHideText() {
+    private func setHideText() {
         topMoneyLabel.text = "********"
         bottomMoneyLabel.text = "********"
     }
     
     // eyeOnOff
-    @objc func showBalance() {
+    @objc private func showBalance() {
         isShow = !isShow
         if isShow {
             setCurrencyText()

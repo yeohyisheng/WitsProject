@@ -11,27 +11,17 @@ class ADView: UIView {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var pageControl: UIPageControl!
     
-    var currentPage = 0
-    var bannerImage: [UIImage] = []
-    var timer: Timer?
+    private let maxShowDots = 3
+    private var currentPage = 0
+    private var bannerImage: [UIImage] = []
+    private var timer: Timer?
     
     override func awakeFromNib() {
         super.awakeFromNib()
         initView()
-        print("init adView")
         initImageView()
         checkNeedShowDots()
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        if timer == nil {
-            timer = Timer.scheduledTimer(timeInterval: 3,
-                                         target: self,
-                                         selector: #selector(autoScroll),
-                                         userInfo: nil,
-                                         repeats: true)
-        }
+        startTimer()
     }
     
     private func initView() {
@@ -44,7 +34,6 @@ class ADView: UIView {
     }
     
     private func initImageView() {
-        print("init Image")
         let networkController = NetworkController.shared
         Task {
             let adBannerStruct = await networkController.fetchBanner()
@@ -56,10 +45,8 @@ class ADView: UIView {
             let dispatchGroup = DispatchGroup()
             for i in 0 ..< bannerList.count {
                 dispatchGroup.enter()
-                print("bannerList = \(bannerList[i])")
                 guard let url = URL(string: bannerList[i].linkURL) else { return }
                 networkController.fetchImage(from: url) { image in
-                    print("image = \(image)")
                     images.append(image ?? UIImage())
                     dispatchGroup.leave()
                 }
@@ -76,11 +63,29 @@ class ADView: UIView {
                     self.bannerImage.append(images[i])
                     self.scrollView.addSubview(imageView)
                 }
-                print("images = \(images)")
-                self.pageControl.numberOfPages = self.bannerImage.count
+                self.pageControl.numberOfPages = self.maxShowDots
                 self.pageControl.currentPage = self.currentPage
             }
         }
+    }
+    
+    private func startTimer() {
+        DispatchQueue.main.async {
+            if self.timer == nil {
+                self.timer = Timer.scheduledTimer(timeInterval: 3,
+                                                  target: self,
+                                                  selector: #selector(self.autoScroll),
+                                                  userInfo: nil,
+                                                  repeats: true)
+            }
+        }
+    }
+    
+    private func stopTimer() {
+        DispatchQueue.main.async {
+                    self.timer?.invalidate()
+                    self.timer = nil
+                }
     }
     
     private func changePage() {
@@ -92,12 +97,11 @@ class ADView: UIView {
             self.scrollView.setContentOffset(CGPoint(x: self.scrollView.frame.width * CGFloat(nextPage), y: 0), animated: true)
         }
         currentPage = nextPage
-        pageControl.currentPage = currentPage
+        checkNeedShowDots()
     }
-    
+        
     private func checkNeedShowDots() {
-        let maxShowDots = 3
-        pageControl.isHidden = bannerImage.count > maxShowDots
+        pageControl.currentPage = currentPage > maxShowDots ? maxShowDots - 1 : currentPage
     }
     
     @objc private func autoScroll() {
@@ -106,9 +110,20 @@ class ADView: UIView {
 }
 
 extension ADView: UIScrollViewDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        stopTimer()
+    }
+    
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let currentPage = Int(scrollView.contentOffset.x / frame.width)
         self.currentPage = currentPage
-        pageControl.currentPage = currentPage
+        checkNeedShowDots()
+        startTimer()
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            startTimer()
+        }
     }
 }

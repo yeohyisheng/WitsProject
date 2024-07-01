@@ -69,7 +69,7 @@ enum APIList: String, Codable {
             return adBannerEndPoint
         }
     }
-
+    
     func getRefresh() -> String {
         switch self {
         case .notification:
@@ -92,6 +92,5 @@ enum APIList: String, Codable {
             return adBannerEndPoint
         }
     }
-
 }
 

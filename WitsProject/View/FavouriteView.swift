@@ -29,7 +29,7 @@ class FavouriteView: UIView {
         super.layoutSubviews()
     }
     
-    func initView() {
+    private func initView() {
         emptyView.isHidden = false
         collectionView.isHidden = true
         

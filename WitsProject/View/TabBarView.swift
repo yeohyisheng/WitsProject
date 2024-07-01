@@ -12,7 +12,7 @@ protocol TabbarViewDelegate: NSObject {
 }
 
 class TabBarView: UIView {
-
+    
     @IBOutlet weak var collectionView: UICollectionView!
     
     let tabBarList: [TabBarStruct] = [TabBarStruct(image: .tabbarHomeActive, title: "Home"),
@@ -35,15 +35,15 @@ class TabBarView: UIView {
         setCollectionView()
     }
     
-    func initView() {
+    private func initView() {
         layer.cornerRadius = bounds.width * (25 / 327)
         layer.shadowOpacity = 0.12
         layer.shadowRadius = 8.0
         layer.shadowOffset = CGSize(width: 0, height: 4)
         
     }
-
-    func setCollectionView() {
+    
+    private func setCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
@@ -116,5 +116,5 @@ extension TabBarView: UICollectionViewDelegate, UICollectionViewDataSource {
             delegate?.showAlertController(controller: controller)
         }
     }
-
+    
 }

@@ -26,12 +26,11 @@ class NavigationView: UIView {
         onTouchBell?()
     }
     
-    private func initView() {
-        avatarView.image = UIImage(resource: .avatar)
-    }
-    
-    // on off
     func setData(bellImage: UIImage) {
         bellView.image = bellImage
+    }
+    
+    private func initView() {
+        avatarView.image = UIImage(resource: .avatar)
     }
 }

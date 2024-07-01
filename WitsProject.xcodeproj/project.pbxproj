@@ -202,6 +202,8 @@
 		2346E8722C2F118F00ABA31A /* Struct */ = {
 			isa = PBXGroup;
 			children = (
+				2346E8732C2F11A500ABA31A /* MenuStruct.swift */,
+				2353ACDC2C308CCF00FEE8CC /* TabBarStruct.swift */,
 				230E13EA2C31684700F60CE1 /* DataUsageStructs */,
 				23EEFCB72C30293C00026170 /* JsonStructs */,
 			);
@@ -243,9 +245,6 @@
 		23B4E1C52C2D855B003467DB /* WitsProject */ = {
 			isa = PBXGroup;
 			children = (
-				2346E8722C2F118F00ABA31A /* Struct */,
-				2346E8732C2F11A500ABA31A /* MenuStruct.swift */,
-				2353ACDC2C308CCF00FEE8CC /* TabBarStruct.swift */,
 				2346E86F2C2F10B600ABA31A /* Networking */,
 				2346E86A2C2F0DDE00ABA31A /* Cell */,
 				23B4E1FA2C2D8DF6003467DB /* Model */,
@@ -313,6 +312,7 @@
 		23B4E1FA2C2D8DF6003467DB /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				2346E8722C2F118F00ABA31A /* Struct */,
 			);
 			path = Model;
 			sourceTree = "<group>";
